@@ -24,10 +24,17 @@ export function Cabecera({ titulo, children }: { titulo: string; children?: Reac
 
 // Texto con **negrita** y *cursiva* en línea (sin dependencias de Markdown).
 export function Texto({ texto, className = '' }: { texto: string; className?: string }) {
-  const partes = texto.split(/(\*\*[^*]+\*\*|\*[^*]+\*|`[^`]+`)/g).filter(Boolean)
+  const partes = texto.split(/(\[[^\]]+\]\(https?:\/\/[^)\s]+\)|\*\*[^*]+\*\*|\*[^*]+\*|`[^`]+`)/g).filter(Boolean)
   return (
     <span className={className}>
       {partes.map((p, i) => {
+        const enlace = p.match(/^\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)$/)
+        if (enlace)
+          return (
+            <a key={i} href={enlace[2]} target="_blank" rel="noopener noreferrer" className="text-indigo-600 underline underline-offset-2 hover:text-indigo-500 dark:text-indigo-400 break-words">
+              {enlace[1]}
+            </a>
+          )
         if (p.startsWith('**')) return <strong key={i}>{p.slice(2, -2)}</strong>
         if (p.startsWith('`')) return <code key={i} className="rounded bg-slate-200 px-1 py-0.5 text-[0.85em] dark:bg-slate-800">{p.slice(1, -1)}</code>
         if (p.startsWith('*')) return <em key={i}>{p.slice(1, -1)}</em>

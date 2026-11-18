@@ -13,8 +13,9 @@ export default function Home({ progreso }: { progreso: Progreso }) {
     <div className="space-y-8">
       <section className="card !p-6 sm:!p-8">
         <Cabecera titulo="Estudia IA de forma estructurada">
-          Una guía interactiva con cuatro módulos: modelos y Transformer, ecosistema agéntico (MCP y skills), harness engineering
-          y metodologías de desarrollo con IA. Marca lo que vas completando y comprueba lo aprendido con los tests de cada módulo.
+          Una guía interactiva con {CURSO.modulos.length} módulos: desde los fundamentos de los modelos y el aprendizaje automático
+          hasta agentes, MCP, harness engineering, metodologías de desarrollo con IA, proyectos prácticos y una biblioteca de recursos.
+          Marca lo que vas completando y comprueba lo aprendido con las autoevaluaciones.
         </Cabecera>
         <div className="mt-4">
           <div className="flex justify-between text-sm">
@@ -50,7 +51,7 @@ export default function Home({ progreso }: { progreso: Progreso }) {
                 <h3 className="mt-1 text-base font-semibold">{m.titulo}</h3>
                 <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">{m.descripcion}</p>
                 <p className="mt-3 text-xs text-slate-500">
-                  {hechasModulo}/{m.lecciones.length} lecciones · {m.quiz.length} preguntas de autoevaluación
+                  {hechasModulo}/{m.lecciones.length} lecciones{m.quiz.length > 0 ? ` · ${m.quiz.length} preguntas de autoevaluación` : ''}
                 </p>
               </a>
             )

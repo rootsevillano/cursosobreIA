@@ -14,6 +14,7 @@ function textoDeBloque(b: Bloque): string {
   switch (b.tipo) {
     case 'parrafo':
     case 'nota':
+    case 'subtitulo':
       return b.texto
     case 'lista':
       return b.items.join(' ')

@@ -72,9 +72,11 @@ export default function Layout({ ruta, progreso, tema, onAlternarTema, menuAbier
                 <span className="flex-1 truncate">{progreso.lecciones.includes(l.id) ? '✔ ' : ''}{l.titulo}</span>
               </a>
             ))}
-            <a href={`#/modulo/${m.id}/quiz`} className={enlace(esActiva('modulo', m.id))}>
-              <ClipboardCheck size={16} /> Autoevaluación
-            </a>
+            {m.quiz.length > 0 && (
+              <a href={`#/modulo/${m.id}/quiz`} className={enlace(esActiva('modulo', m.id))}>
+                <ClipboardCheck size={16} /> Autoevaluación
+              </a>
+            )}
           </div>
         </details>
       ))}

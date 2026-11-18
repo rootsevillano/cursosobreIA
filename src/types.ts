@@ -10,6 +10,7 @@ export interface Fuente {
 
 export type Bloque =
   | { tipo: 'parrafo'; texto: string }
+  | { tipo: 'subtitulo'; nivel: number; texto: string }
   | { tipo: 'lista'; items: string[] }
   | { tipo: 'nota'; texto: string }
   | { tipo: 'tabla'; cabeceras: string[]; filas: string[][] }
@@ -22,6 +23,8 @@ export interface Leccion {
   tiempoLecturaMin: number
   fuentes: Fuente[]
   bloques: Bloque[]
+  /** Marca de las lecciones generadas por tools/importar-contenido.mjs. */
+  origen?: string
 }
 
 export interface PreguntaQuiz {
@@ -38,6 +41,7 @@ export interface Modulo {
   descripcion: string
   lecciones: Leccion[]
   quiz: PreguntaQuiz[]
+  importado?: boolean
 }
 
 export interface TerminoGlosario {

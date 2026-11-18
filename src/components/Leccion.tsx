@@ -18,6 +18,14 @@ function Bloque({ b }: { b: BloqueDato }) {
   switch (b.tipo) {
     case 'parrafo':
       return <p className="my-3 leading-relaxed"><Texto texto={b.texto} /></p>
+    case 'subtitulo': {
+      const Etiqueta = b.nivel <= 2 ? 'h2' : 'h3'
+      return (
+        <Etiqueta className={`mt-6 font-semibold text-slate-900 dark:text-white ${b.nivel <= 2 ? 'text-xl' : 'text-lg'}`}>
+          <Texto texto={b.texto} />
+        </Etiqueta>
+      )
+    }
     case 'lista':
       return (
         <ul className="my-3 list-disc space-y-1.5 pl-5">

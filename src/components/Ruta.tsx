@@ -7,7 +7,7 @@ export default function Ruta({ progreso }: { progreso: Progreso }) {
   return (
     <div className="space-y-8">
       <Cabecera titulo="Ruta de aprendizaje">
-        Cuatro módulos progresivos. Sigue el orden: cada módulo prepara el siguiente. Al final de cada uno tienes una autoevaluación.
+        {CURSO.modulos.length} módulos. Sigue el orden de la ruta: cada módulo prepara el siguiente. Los módulos con autoevaluación la muestran al final.
       </Cabecera>
 
       {CURSO.modulos.map((m, i) => (
@@ -59,11 +59,13 @@ export default function Ruta({ progreso }: { progreso: Progreso }) {
                 </li>
               )
             })}
-            <li>
-              <a href={`#/modulo/${m.id}/quiz`} className="btn-secundario w-full sm:w-auto">
-                <ClipboardCheck size={16} /> Autoevaluación del módulo ({m.quiz.length} preguntas)
-              </a>
-            </li>
+            {m.quiz.length > 0 && (
+              <li>
+                <a href={`#/modulo/${m.id}/quiz`} className="btn-secundario w-full sm:w-auto">
+                  <ClipboardCheck size={16} /> Autoevaluación del módulo ({m.quiz.length} preguntas)
+                </a>
+              </li>
+            )}
           </ol>
         </section>
       ))}
