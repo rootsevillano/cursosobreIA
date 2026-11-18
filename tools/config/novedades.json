@@ -1,0 +1,117 @@
+{
+  "_comentario": "Fuentes que vigila tools/novedades.mjs. Añade o quita entradas según evolucione el temario. 'modulo' indica dónde encajaría una novedad: m1 Fundamentos, m2 Ecosistema agéntico, m3 Harness, m4 Metodologías.",
+  "arxiv": [
+    {
+      "consulta": "all:\"model context protocol\"",
+      "modulo": "m2",
+      "tema": "MCP"
+    },
+    {
+      "consulta": "all:\"agent-computer interface\" OR all:\"coding agent\"",
+      "modulo": "m3",
+      "tema": "Agentes de código y ACI"
+    },
+    {
+      "consulta": "all:\"context engineering\" AND all:\"agent\"",
+      "modulo": "m3",
+      "tema": "Ingeniería de contexto"
+    },
+    {
+      "consulta": "all:\"reasoning\" AND all:\"reinforcement learning\" AND all:\"language model\"",
+      "modulo": "m1",
+      "tema": "Razonamiento y RL"
+    },
+    {
+      "consulta": "all:\"test-driven\" AND all:\"LLM\"",
+      "modulo": "m4",
+      "tema": "TDD con IA"
+    },
+    {
+      "consulta": "all:\"spec-driven\" OR (all:\"specification\" AND all:\"coding agent\")",
+      "modulo": "m4",
+      "tema": "Desarrollo guiado por especificaciones"
+    },
+    {
+      "consulta": "all:\"function calling\" AND all:\"language model\"",
+      "modulo": "m2",
+      "tema": "Function calling"
+    }
+  ],
+  "github": [
+    {
+      "repo": "modelcontextprotocol/specification",
+      "modulo": "m2",
+      "tema": "Especificación MCP"
+    },
+    {
+      "repo": "anthropics/claude-code",
+      "modulo": "m2",
+      "tema": "Claude Code"
+    },
+    {
+      "repo": "openai/openai-agents-python",
+      "modulo": "m2",
+      "tema": "SDK de agentes de OpenAI"
+    },
+    {
+      "repo": "github/spec-kit",
+      "modulo": "m4",
+      "tema": "Spec Kit (SDD)"
+    },
+    {
+      "repo": "Aider-AI/aider",
+      "modulo": "m3",
+      "tema": "Aider (repo map)"
+    },
+    {
+      "repo": "SWE-agent/SWE-agent",
+      "modulo": "m3",
+      "tema": "SWE-agent"
+    },
+    {
+      "repo": "All-Hands-AI/OpenHands",
+      "modulo": "m3",
+      "tema": "OpenHands"
+    },
+    {
+      "repo": "NousResearch/Hermes-Function-Calling",
+      "modulo": "m2",
+      "tema": "Hermes function calling"
+    }
+  ],
+  "diasGitHub": 120,
+  "maxPorFuente": 8,
+  "tavily": [
+    {
+      "consulta": "Model Context Protocol specification new version release",
+      "modulo": "m2",
+      "tema": "MCP"
+    },
+    {
+      "consulta": "Claude Code new features agents skills hooks subagents",
+      "modulo": "m2",
+      "tema": "Claude Code"
+    },
+    {
+      "consulta": "AI agent SDK new release Anthropic OpenAI Google",
+      "modulo": "m2",
+      "tema": "SDK de agentes"
+    },
+    {
+      "consulta": "reasoning language models reinforcement learning new open model release",
+      "modulo": "m1",
+      "tema": "Modelos de razonamiento"
+    },
+    {
+      "consulta": "coding agent harness context engineering best practices",
+      "modulo": "m3",
+      "tema": "Harness y contexto"
+    },
+    {
+      "consulta": "spec-driven development AI coding agents methodology",
+      "modulo": "m4",
+      "tema": "Metodologías con IA"
+    }
+  ],
+  "diasTavily": 180
+}

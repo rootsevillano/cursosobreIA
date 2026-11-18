@@ -1,0 +1,368 @@
+{
+  "version": 1,
+  "modulos": [
+    {
+      "id": "m1",
+      "titulo": "Fundamentos y Modelos",
+      "descripcion": "Cómo funciona un modelo de lenguaje por dentro: tokens, arquitectura Transformer, atención y entrenamiento con refuerzo que da lugar a los modelos de razonamiento.",
+      "lecciones": [
+        {
+          "id": "m1-l1",
+          "titulo": "Qué es un LLM y cómo genera texto",
+          "dificultad": "basica",
+          "tiempoLecturaMin": 10,
+          "fuentes": [
+            { "titulo": "Hugging Face — LLM Course, Capítulo 1", "url": "https://huggingface.co/learn/llm-course/chapter1/1", "tipo": "curso" },
+            { "titulo": "Andrej Karpathy — Let's build GPT (nanoGPT)", "url": "https://github.com/karpathy/ng-video-lecture", "tipo": "curso" }
+          ],
+          "bloques": [
+            { "tipo": "parrafo", "texto": "Un modelo de lenguaje grande (LLM, *Large Language Model*) es una red neuronal entrenada para una tarea muy concreta: dado un texto, predecir el siguiente fragmento. Todo lo que hace —responder, programar, razonar— se construye sobre esa predicción repetida una y otra vez." },
+            { "tipo": "parrafo", "texto": "El texto no se procesa como caracteres ni como palabras completas, sino como **tokens**: fragmentos de texto (una palabra, una parte de palabra o un signo) a los que el modelo asigna un identificador numérico. Un token suele equivaler a unos cuatro caracteres en inglés; en castellano el número de tokens por palabra suele ser algo mayor." },
+            { "tipo": "lista", "items": [
+              "**Tokenización:** el texto se convierte en una secuencia de identificadores de token.",
+              "**Embeddings:** cada token se transforma en un vector denso de números reales.",
+              "**Bloques Transformer:** capas de atención y redes feed-forward transforman esos vectores.",
+              "**Distribución de probabilidad:** la última capa produce una probabilidad para cada token posible del vocabulario.",
+              "**Muestreo:** se elige el siguiente token (con temperatura, top-p u otras estrategias) y el proceso se repite."
+            ]},
+            { "tipo": "nota", "texto": "**Idea clave:** el modelo no « sabe » la respuesta antes de escribirla; la va construyendo token a token, condicionado por todo lo que ya ha escrito (incluido el contexto de la conversación)." },
+            { "tipo": "codigo", "lenguaje": "python", "comentario": "Bucle de generación simplificado: predecir un token, añadirlo al contexto y repetir.", "codigo": "def generar(modelo, tokenizador, prompt, max_tokens=50):\n    ids = tokenizador.encode(prompt)          # texto -> tokens\n    for _ in range(max_tokens):\n        probs = modelo.predecir_siguiente(ids)  # distribución sobre el vocabulario\n        siguiente = muestrear(probs)           # p. ej. con temperatura o top-p\n        ids.append(siguiente)                  # el nuevo token pasa a formar parte del contexto\n        if siguiente == tokenizador.fin_de_texto:\n            break\n    return tokenizador.decode(ids)" },
+            { "tipo": "tabla", "cabeceras": ["Fase", "Qué ocurre", "Coste aproximado"], "filas": [
+              ["Preentrenamiento", "Predicción del siguiente token sobre enormes corpus de texto", "Muy alto (cómputo masivo)"],
+              ["Ajuste fino supervisado", "Ejemplos de instrucción y respuesta escritos por humanos", "Medio"],
+              ["Refuerzo con retroalimentación", "El modelo mejora según recompensas (ver lección 3)", "Medio-alto"]
+            ]}
+          ]
+        },
+        {
+          "id": "m1-l2",
+          "titulo": "La arquitectura Transformer y la atención",
+          "dificultad": "intermedia",
+          "tiempoLecturaMin": 15,
+          "fuentes": [
+            { "titulo": "Vaswani et al. — Attention Is All You Need (arXiv:1706.03762)", "url": "https://arxiv.org/abs/1706.03762", "tipo": "paper" },
+            { "titulo": "Jay Alammar — The Illustrated Transformer", "url": "https://jalammar.github.io/illustrated-transformer/", "tipo": "articulo" }
+          ],
+          "bloques": [
+            { "tipo": "parrafo", "texto": "El Transformer, presentado en 2017 en el artículo *Attention Is All You Need*, sustituyó a las redes recurrentes por un mecanismo que permite que cada token « mire » a todos los demás de la secuencia en paralelo. Ese mecanismo es la **autoatención** (*self-attention*)." },
+            { "tipo": "parrafo", "texto": "Para cada token se calculan tres vectores a partir de su embedding: **consulta** (Q, *query*: qué busco), **clave** (K, *key*: qué ofrezco) y **valor** (V, *value*: qué información aporto). La atención pondera los valores según la compatibilidad entre consultas y claves:" },
+            { "tipo": "codigo", "lenguaje": "text", "comentario": "Atención escalada por producto escalar (scaled dot-product attention).", "codigo": "Attention(Q, K, V) = softmax( Q · Kᵀ / √d_k ) · V" },
+            { "tipo": "lista", "items": [
+              "**Multi-cabeza (multi-head):** varias atenciones en paralelo, cada una aprende relaciones distintas (sintaxis, correferencia, posición…).",
+              "**Codificación posicional:** como la atención no conoce el orden, se suma a cada embedding una señal que indica su posición.",
+              "**Conexiones residuales y normalización de capa:** facilitan entrenar redes profundas.",
+              "**Decodificador:** en la traducción original, usa atención enmascarada (cada token solo ve los anteriores) y atención cruzada hacia el codificador."
+            ]},
+            { "tipo": "nota", "texto": "Los LLM actuales (GPT, Claude, Gemini, Llama…) son mayoritariamente **decodificadores solo** con atención enmascarada: generan texto de izquierda a derecha." },
+            { "tipo": "tabla", "cabeceras": ["Concepto", "Para qué sirve", "Límite práctico"], "filas": [
+              ["Ventana de contexto", "Número máximo de tokens que el modelo puede atender a la vez", "El coste de atención crece con la longitud"],
+              ["Cabezas de atención", "Capturan relaciones en paralelo", "Más cabezas no siempre mejora"],
+              ["Codificación posicional", "Da noción de orden", "Extrapolar fuera del rango visto en entrenamiento es difícil"]
+            ]}
+          ]
+        },
+        {
+          "id": "m1-l3",
+          "titulo": "Razonamiento y refuerzo: DeepSeek-R1",
+          "dificultad": "avanzada",
+          "tiempoLecturaMin": 12,
+          "fuentes": [
+            { "titulo": "DeepSeek-AI — DeepSeek-R1 (arXiv:2501.12948)", "url": "https://arxiv.org/abs/2501.12948", "tipo": "paper" }
+          ],
+          "bloques": [
+            { "tipo": "parrafo", "texto": "Los **modelos de razonamiento** generan una cadena de pensamiento interna antes de responder. El informe técnico de DeepSeek-R1 mostró que esa capacidad puede incentivarse casi solo con **aprendizaje por refuerzo** (RL) sobre tareas verificables, como matemáticas o código." },
+            { "tipo": "lista", "items": [
+              "**DeepSeek-R1-Zero:** RL directo sobre el modelo base, sin datos de ejemplo previos. Aparecen razonamientos largos y autoverificación, pero con legibilidad pobre.",
+              "**Arranque en frío (cold start):** unos pocos miles de ejemplos legibles antes del RL para estabilizar el estilo.",
+              "**Recompensas basadas en reglas:** precisión (la respuesta final es verificable) y formato (el razonamiento va en las etiquetas esperadas).",
+              "**GRPO (Group Relative Policy Optimization):** compara varias respuestas muestreadas para el mismo prompt y usa su recompensa relativa, sin necesidad de un modelo crítico separado.",
+              "**Destilación:** los razonamientos de R1 se usan para entrenar modelos más pequeños, que conservan buena parte de la capacidad."
+            ]},
+            { "tipo": "nota", "texto": "**Término clave:** *reasoning effort* (esfuerzo de razonamiento). Muchos proveedores permiten elegir cuántos tokens de razonamiento invierte el modelo antes de responder: más esfuerzo mejora la calidad en problemas difíciles, pero aumenta latencia y coste." },
+            { "tipo": "parrafo", "texto": "Consecuencia práctica: para tareas simples (renombrar una variable, un resumen corto) un modelo rápido sin razonamiento extenso es suficiente; para diagnosticar un fallo complejo o diseñar una arquitectura, merece la pena pagar más razonamiento." }
+          ]
+        }
+      ],
+      "quiz": [
+        { "id": "m1-q1", "pregunta": "¿Qué predice un LLM durante su entrenamiento base (preentrenamiento)?", "opciones": ["La intención del usuario en su próxima pregunta", "El siguiente token dado el contexto anterior", "La puntuación de calidad de una respuesta", "La longitud óptima de la respuesta"], "correcta": 1, "explicacion": "El preentrenamiento consiste en predecir el siguiente token. La calidad de las respuestas y la intención se aprenden después, con ajuste fino y refuerzo." },
+        { "id": "m1-q2", "pregunta": "En la fórmula de la atención escalada, ¿por qué se divide el producto Q·Kᵀ entre √d_k?", "opciones": ["Para convertir los valores en enteros", "Para evitar que los productos escalares crezcan demasiado y saturen el softmax", "Para eliminar la codificación posicional", "Para reducir el número de cabezas"], "correcta": 1, "explicacion": "Con dimensiones grandes, los productos escalares tienen varianza alta y el softmax se satura. Dividir entre √d_k estabiliza los gradientes." },
+        { "id": "m1-q3", "pregunta": "¿Qué aporta la codificación posicional en un Transformer?", "opciones": ["Comprime el contexto para ahorrar tokens", "Permite que la atención conozca el orden de los tokens", "Sustituye a las capas de atención", "Filtra el contenido inapropiado"], "correcta": 1, "explicacion": "La atención, por sí sola, trata la secuencia como un conjunto. La codificación posicional añade información de orden a cada embedding." },
+        { "id": "m1-q4", "pregunta": "¿Qué caracteriza a DeepSeek-R1-Zero frente a DeepSeek-R1?", "opciones": ["Se entrenó sin aprendizaje por refuerzo", "Aplicó RL directamente sobre el modelo base, sin el arranque en frío previo", "Es un modelo solo de visión", "No usa tokens de razonamiento"], "correcta": 1, "explicacion": "R1-Zero aplica RL sin datos de ejemplo previos; mostró capacidad de razonamiento, pero con poca legibilidad, por lo que R1 añadió un arranque en frío." },
+        { "id": "m1-q5", "pregunta": "¿Qué es un token?", "opciones": ["Una contraseña de acceso a la API", "Un fragmento de texto al que el modelo asigna un identificador numérico", "Una unidad de memoria de la GPU", "Una frase completa del prompt"], "correcta": 1, "explicacion": "Un token es un fragmento de texto (palabra, parte de palabra o signo). Es la unidad con la que trabajan el modelo y la facturación de la mayoría de las APIs." }
+      ]
+    },
+    {
+      "id": "m2",
+      "titulo": "Ecosistema Agéntico, MCP y Skills",
+      "descripcion": "Qué es un agente frente a un flujo de trabajo, cómo se llama a herramientas y cómo se conectan modelos con sistemas externos mediante MCP, skills y SDK de agentes.",
+      "lecciones": [
+        {
+          "id": "m2-l1",
+          "titulo": "Agentes frente a workflows: patrones de Anthropic",
+          "dificultad": "intermedia",
+          "tiempoLecturaMin": 14,
+          "fuentes": [
+            { "titulo": "Anthropic — Building Effective Agents", "url": "https://www.anthropic.com/engineering/building-effective-agents", "tipo": "articulo" }
+          ],
+          "bloques": [
+            { "tipo": "parrafo", "texto": "Anthropic distingue dos categorías dentro de los **sistemas agénticos**. Un **workflow** orquesta LLM y herramientas mediante rutas de código predefinidas. Un **agente** es un sistema en el que el propio LLM decide sus pasos y el uso de herramientas, en bucle, hasta cumplir la tarea." },
+            { "tipo": "tabla", "cabeceras": ["Patrón", "Cuándo usarlo", "Ejemplo"], "filas": [
+              ["Encadenamiento de prompts (prompt chaining)", "Tarea descomponible en pasos fijos", "Redactar un esquema, validarlo y luego escribir el documento"],
+              ["Enrutamiento (routing)", "Categorías distintas que se tratan por separado", "Derivar consultas de soporte a modelos o flujos distintos"],
+              ["Paralelización", "Subtareas independientes o votación", "Revisar código con varios prompts y agregar hallazgos"],
+              ["Orquestador-trabajadores", "Subtareas que no se pueden predecir de antemano", "Cambiar varios ficheros de código según la petición"],
+              ["Evaluador-optimizador", "Criterios de evaluación claros y mejora iterativa", "Traducción literaria con crítica y reescritura"],
+              ["Agente autónomo", "Problemas abiertos con número de pasos impredecible", "Resolver incidencias de un repositorio en un entorno aislado"]
+            ]},
+            { "tipo": "lista", "items": [
+              "**Simplicidad primero:** empieza con una sola llamada bien optimizada y añade complejidad solo si mejora medidas reales.",
+              "**Transparencia:** muestra los pasos de planificación del agente.",
+              "**Diseño de la interfaz agente-ordenador (ACI):** documenta y prueba las herramientas con el mismo cuidado que una API para humanos."
+            ]},
+            { "tipo": "nota", "texto": "Un agente necesita « tierra firme » en cada paso: resultados de herramientas, salidas de compilación o tests. Sin esa retroalimentación del entorno, los errores se acumulan." }
+          ]
+        },
+        {
+          "id": "m2-l2",
+          "titulo": "Function calling y herramientas",
+          "dificultad": "intermedia",
+          "tiempoLecturaMin": 10,
+          "fuentes": [
+            { "titulo": "Google — Function calling with the Gemini API · fuente pendiente de descarga", "url": "https://ai.google.dev/gemini-api/docs/function-calling", "tipo": "docs" },
+            { "titulo": "NousResearch — Hermes Function Calling", "url": "https://github.com/NousResearch/Hermes-Function-Calling", "tipo": "docs" }
+          ],
+          "bloques": [
+            { "tipo": "parrafo", "texto": "**Function calling** (llamada a funciones o *tool use*) permite que el modelo solicite la ejecución de una función definida por la aplicación. El modelo no ejecuta nada: produce una petición estructurada con el nombre de la herramienta y sus argumentos; la aplicación la ejecuta y devuelve el resultado al modelo." },
+            { "tipo": "codigo", "lenguaje": "json", "comentario": "Definición de herramienta con un esquema JSON: el modelo solo puede pedir lo que esté descrito aquí.", "codigo": "{\n  \"name\": \"leer_fichero\",\n  \"description\": \"Devuelve el contenido de un fichero del proyecto.\",\n  \"parameters\": {\n    \"type\": \"object\",\n    \"properties\": {\n      \"ruta\": { \"type\": \"string\", \"description\": \"Ruta relativa a la raíz del proyecto\" }\n    },\n    \"required\": [\"ruta\"]\n  }\n}" },
+            { "tipo": "lista", "items": [
+              "**Declaración:** nombre, descripción y esquema de parámetros (normalmente JSON Schema).",
+              "**Decisión:** el modelo elige si llama a una herramienta y con qué argumentos.",
+              "**Ejecución:** la aplicación valida los argumentos y ejecuta la función real, con permisos y límites.",
+              "**Devolución:** el resultado se añade al contexto y el modelo continúa."
+            ]},
+            { "tipo": "nota", "texto": "**Seguridad:** la descripción de una herramienta influye en el comportamiento del modelo. Valida siempre los argumentos en código y nunca confíes en que el modelo los genere bien." },
+            { "tipo": "parrafo", "texto": "Los modelos ajustados para *function calling* (como la familia Hermes) siguen mejor los formatos de llamada. Para salidas estructuradas sin herramientas se usa el **modo JSON** o esquemas de salida, que restringen la respuesta a un formato válido." }
+          ]
+        },
+        {
+          "id": "m2-l3",
+          "titulo": "MCP, Skills y SDK de agentes",
+          "dificultad": "intermedia",
+          "tiempoLecturaMin": 12,
+          "fuentes": [
+            { "titulo": "Model Context Protocol — Introducción · fuente pendiente de descarga", "url": "https://modelcontextprotocol.io/introduction", "tipo": "docs" },
+            { "titulo": "Anthropic — Claude Code (visión general) · fuente pendiente de descarga", "url": "https://docs.anthropic.com/en/docs/agents-and-tools/claude-code/overview", "tipo": "docs" },
+            { "titulo": "OpenAI — Agents SDK", "url": "https://openai.github.io/openai-agents-python/", "tipo": "docs" }
+          ],
+          "bloques": [
+            { "tipo": "parrafo", "texto": "**MCP (Model Context Protocol)** es un protocolo abierto que estandariza cómo una aplicación de IA (el *host* o cliente) se conecta a fuentes de datos y herramientas externas mediante *servidores MCP*. Sustituye integraciones a medida por un contrato común, sobre JSON-RPC." },
+            { "tipo": "tabla", "cabeceras": ["Primitiva MCP", "Quién la controla", "Qué expone"], "filas": [
+              ["Tools (herramientas)", "El modelo, con aprobación", "Acciones que se pueden ejecutar"],
+              ["Resources (recursos)", "La aplicación", "Datos legibles: ficheros, filas, documentos"],
+              ["Prompts", "El usuario", "Plantillas de instrucciones reutilizables"]
+            ]},
+            { "tipo": "parrafo", "texto": "Una **Skill** es un paquete de instrucciones, plantillas y a veces scripts que el agente carga **bajo demanda** cuando la tarea lo requiere. A diferencia de un MCP, que aporta capacidades de conexión, una skill aporta conocimiento procedimental: cómo hacer algo con las herramientas que ya tiene." },
+            { "tipo": "lista", "items": [
+              "**Agente:** el bucle que razona, decide y actúa.",
+              "**Skill:** conocimiento empaquetado que se activa cuando procede.",
+              "**MCP:** puente estándar hacia sistemas externos.",
+              "**SDK de agentes:** librería con primitivas como agentes, traspasos (*handoffs*), guardrails y trazas."
+            ]},
+            { "tipo": "nota", "texto": "El SDK de agentes de OpenAI se apoya en pocas primitivas: agentes con instrucciones y herramientas, delegación entre agentes, guardrails de entrada y salida, y trazado integrado. Usa la API de Respuestas directamente cuando quieras controlar tú el bucle." }
+          ]
+        }
+      ],
+      "quiz": [
+        { "id": "m2-q1", "pregunta": "¿Cuál es la diferencia clave entre un workflow y un agente según Anthropic?", "opciones": ["Los workflows no usan LLM", "En un workflow el código define las rutas; en un agente el LLM dirige su propio proceso", "Los agentes no usan herramientas", "Los workflows siempre son más caros"], "correcta": 1, "explicacion": "Un workflow sigue rutas predefinidas en código; un agente decide dinámicamente pasos y herramientas dentro de un bucle." },
+        { "id": "m2-q2", "pregunta": "En function calling, ¿quién ejecuta realmente la función?", "opciones": ["El modelo, dentro de su contexto", "La aplicación, tras recibir la petición estructurada del modelo", "El proveedor del modelo en sus servidores", "El navegador del usuario automáticamente"], "correcta": 1, "explicacion": "El modelo solo produce una petición con nombre y argumentos. La aplicación valida y ejecuta la función, y devuelve el resultado." },
+        { "id": "m2-q3", "pregunta": "¿Qué primitiva de MCP suele controlar la aplicación y no el modelo?", "opciones": ["Tools", "Resources", "Sampling y cualquier acción destructiva", "Ninguna"], "correcta": 1, "explicacion": "Los resources son datos que la aplicación decide qué exponer y adjuntar al contexto. Las tools las invoca el modelo con aprobación." },
+        { "id": "m2-q4", "pregunta": "¿Cuál es la diferencia principal entre una Skill y un servidor MCP?", "opciones": ["La skill es siempre remota", "La skill aporta procedimiento y conocimiento; el MCP aporta conexión a sistemas externos", "El MCP no puede contener instrucciones", "No hay diferencia"], "correcta": 1, "explicacion": "Un MCP da acceso a datos y acciones de un sistema; una skill enseña cómo y cuándo usar las capacidades disponibles." },
+        { "id": "m2-q5", "pregunta": "Según el artículo de Anthropic, ¿cuál es el primer consejo al construir un sistema con LLM?", "opciones": ["Usar el framework más completo disponible", "Empezar con la solución más simple posible y añadir complejidad solo si mejora resultados", "Diseñar siempre un agente autónomo", "Ejecutar el modelo más grande por defecto"], "correcta": 1, "explicacion": "El artículo recomienda la solución más simple y mantener el control de los prompts y las respuestas, aumentando complejidad solo cuando hay una mejora medible." }
+      ]
+    },
+    {
+      "id": "m3",
+      "titulo": "Harness Engineering y Agentes",
+      "descripcion": "El arnés que rodea al modelo: bucle del agente, gestión del contexto, diseño de la interfaz agente-ordenador y mecanismos de control y verificación.",
+      "lecciones": [
+        {
+          "id": "m3-l1",
+          "titulo": "Harness engineering: qué es el arnés",
+          "dificultad": "intermedia",
+          "tiempoLecturaMin": 10,
+          "fuentes": [
+            { "titulo": "OpenHands — Documentación de arquitectura · fuente pendiente de descarga", "url": "https://docs.all-hands.dev/", "tipo": "docs" }
+          ],
+          "bloques": [
+            { "tipo": "parrafo", "texto": "El **harness** (arnés) es todo el software que rodea al modelo y convierte una llamada aislada en un agente útil: el bucle de ejecución, las herramientas, los permisos, la gestión del contexto, la memoria, los logs y los mecanismos de verificación. *Harness engineering* es el oficio de diseñar ese arnés." },
+            { "tipo": "lista", "items": [
+              "**Bucle del agente:** envía contexto al modelo, ejecuta las herramientas pedidas, añade resultados y repite hasta terminar o llegar a un límite.",
+              "**Herramientas y permisos:** qué puede tocar el agente y qué requiere aprobación humana.",
+              "**Gestión del contexto:** qué entra en la ventana, cuándo se resume y qué se descarta.",
+              "**Backpressure:** mecanismos que frenan o corrigen al agente cuando su salida no pasa comprobaciones (tests, linters, compilación, tipos).",
+              "**Trazas y observabilidad:** registro de cada paso para depurar y evaluar."
+            ]},
+            { "tipo": "nota", "texto": "**Backpressure** (contrapresión): término tomado de la ingeniería de sistemas. En un harness significa dar al agente una señal de rechazo (un test que falla) para que corrija, en lugar de aceptar su primera salida." },
+            { "tipo": "parrafo", "texto": "La conclusión práctica: con un modelo equivalente, el harness puede cambiar mucho la calidad final. Por eso se invierte tanto en herramientas bien documentadas, verificaciones automáticas y límites claros." }
+          ]
+        },
+        {
+          "id": "m3-l2",
+          "titulo": "Ingeniería de contexto: el mapa del repositorio",
+          "dificultad": "intermedia",
+          "tiempoLecturaMin": 10,
+          "fuentes": [
+            { "titulo": "Aider — Repository map", "url": "https://aider.chat/docs/repomap.html", "tipo": "docs" }
+          ],
+          "bloques": [
+            { "tipo": "parrafo", "texto": "El contexto es un recurso escaso. Aider resuelve el problema de « ¿qué le enseño al modelo de mi repositorio? » enviando un **mapa del repositorio** (*repo map*): un listado conciso de ficheros y de sus símbolos clave (clases, funciones y firmas), sin el cuerpo completo." },
+            { "tipo": "lista", "items": [
+              "**Extracción de símbolos:** se identifican definiciones y firmas en cada fichero.",
+              "**Grafo de dependencias:** los ficheros son nodos y las dependencias son aristas.",
+              "**Ranking:** un algoritmo de grafos (similar a PageRank) prioriza los símbolos más referenciados.",
+              "**Presupuesto de tokens:** el mapa se ajusta a un límite configurable (en Aider, `--map-tokens`, 1 k por defecto)."
+            ]},
+            { "tipo": "codigo", "lenguaje": "text", "comentario": "Ejemplo de salida tipo mapa: firmas y elisiones, sin el cuerpo de las funciones.", "codigo": "aider/coders/base_coder.py:\n⋮...\n│class Coder:\n⋮...\n│    def run(self, with_message=None):\n⋮...\n\naider/commands.py:\n⋮...\n│class Commands:\n⋮..." },
+            { "tipo": "nota", "texto": "El modelo ve las firmas de todo el repositorio y, si necesita más, pide ver ficheros concretos. Así el contexto se usa para navegar, no para volcar código entero." }
+          ]
+        },
+        {
+          "id": "m3-l3",
+          "titulo": "Diseño de la interfaz agente-ordenador (ACI)",
+          "dificultad": "avanzada",
+          "tiempoLecturaMin": 12,
+          "fuentes": [
+            { "titulo": "Yang et al. — SWE-agent: Agent-Computer Interfaces (arXiv:2405.15793)", "url": "https://arxiv.org/abs/2405.15793", "tipo": "paper" }
+          ],
+          "bloques": [
+            { "tipo": "parrafo", "texto": "SWE-agent propone que los agentes de LLM son un nuevo tipo de usuario, con necesidades propias, y que la **interfaz agente-ordenador** (ACI) influye en el rendimiento tanto como el modelo. Un terminal pensado para humanos no es necesariamente un buen entorno para un agente." },
+            { "tipo": "tabla", "cabeceras": ["Principio de diseño", "Problema que evita", "Ejemplo"], "filas": [
+              ["Comandos simples y explícitos", "Errores de sintaxis en acciones complejas", "Un comando de edición con rangos de líneas"],
+              ["Retroalimentación compacta", "Saturar el contexto con salidas enormes", "Mostrar solo las líneas relevantes tras editar"],
+              ["Guardrails de edición", "Romper código por ediciones incorrectas", "Rechazar una edición que deja el fichero sin sintaxis válida"],
+              ["Paginación y búsqueda", "Perderse en ficheros grandes", "Ver 100 líneas por vez con búsqueda integrada"]
+            ]},
+            { "tipo": "lista", "items": [
+              "Diseña las herramientas como si las usara un colega con poca memoria: nombres claros, parámetros mínimos y errores explicativos.",
+              "Mide el resultado: el harness debe registrar intentos, fallos y tiempos para mejorar la interfaz con datos.",
+              "Cuando el diseño de la herramienta es malo, el modelo « falla » aunque sea capaz: el problema está en la interfaz."
+            ]},
+            { "tipo": "nota", "texto": "Como resume Anthropic, conviene invertir tanto en la documentación de las herramientas como en el prompt principal: el formato de entrada y salida de cada herramienta condiciona el éxito del agente." }
+          ]
+        }
+      ],
+      "quiz": [
+        { "id": "m3-q1", "pregunta": "¿Qué engloba el término « harness » en ingeniería de agentes?", "opciones": ["Solo el modelo de lenguaje", "El software alrededor del modelo: bucle, herramientas, permisos, contexto y verificación", "El conjunto de datos de entrenamiento", "La interfaz gráfica del chat"], "correcta": 1, "explicacion": "El harness es todo lo que convierte el modelo en un agente operativo. El modelo es solo una pieza del sistema." },
+        { "id": "m3-q2", "pregunta": "¿Qué significa « backpressure » aplicado a un agente de código?", "opciones": ["Aumentar la velocidad de generación", "Señales de rechazo (tests, linters, compilador) que obligan al agente a corregir", "Limitar el número de usuarios", "Comprimir el historial"], "correcta": 1, "explicacion": "El backpressure devuelve al agente una señal de que su salida no cumple las comprobaciones, para que la corrija antes de darla por buena." },
+        { "id": "m3-q3", "pregunta": "¿Cuál es la función principal del repo map de Aider?", "opciones": ["Ejecutar los tests automáticamente", "Dar al modelo un resumen de símbolos y firmas del repositorio dentro de un presupuesto de tokens", "Sustituir a git", "Traducir el código a otro lenguaje"], "correcta": 1, "explicacion": "El repo map ofrece una vista compacta de clases, funciones y firmas, priorizada por un grafo de dependencias y ajustada a un presupuesto de tokens." },
+        { "id": "m3-q4", "pregunta": "En el diseño de una ACI, ¿qué problema evita la retroalimentación compacta?", "opciones": ["La falta de memoria del disco", "Saturar la ventana de contexto con salidas demasiado largas", "Que el modelo hable en otro idioma", "Las llamadas duplicadas a la API"], "correcta": 1, "explicacion": "Mostrar solo lo relevante tras cada acción evita que el contexto se llene de ruido y mantiene al agente centrado." },
+        { "id": "m3-q5", "pregunta": "¿Por qué un guardrail de edición es útil en un agente?", "opciones": ["Acelera la generación de tokens", "Rechaza ediciones que dejarían el fichero inválido, en lugar de aceptarlas a ciegas", "Reemplaza al control de versiones", "Elimina la necesidad de tests"], "correcta": 1, "explicacion": "Un guardrail de edición valida el resultado antes de aplicarlo, evitando que un error del agente rompa el código sin que nadie lo note." }
+      ]
+    },
+    {
+      "id": "m4",
+      "titulo": "Metodologías de Desarrollo con IA",
+      "descripcion": "TDD, BDD, desarrollo guiado por especificaciones y contratos de API, y las metodologías ODD, ASDD y FTD, con criterios para elegir y combinar enfoques.",
+      "lecciones": [
+        {
+          "id": "m4-l1",
+          "titulo": "TDD: Red, Green, Refactor",
+          "dificultad": "basica",
+          "tiempoLecturaMin": 8,
+          "fuentes": [
+            { "titulo": "Martin Fowler — Test Driven Development", "url": "https://martinfowler.com/bliki/TestDrivenDevelopment.html", "tipo": "articulo" }
+          ],
+          "bloques": [
+            { "tipo": "parrafo", "texto": "**TDD** (*Test-Driven Development*) es una técnica creada por Kent Beck a finales de los noventa como parte de Extreme Programming. Se repite un ciclo corto de tres pasos: escribir un test para la siguiente funcionalidad, escribir el código mínimo para que pase y refactorizar sin cambiar el comportamiento." },
+            { "tipo": "tabla", "cabeceras": ["Paso", "Qué se hace", "Señal"], "filas": [
+              ["Red", "Escribir un test que falla", "El test falla por la razón correcta"],
+              ["Green", "Escribir el código mínimo que lo hace pasar", "Todos los tests pasan"],
+              ["Refactor", "Mejorar la estructura sin cambiar el comportamiento", "Los tests siguen pasando"]
+            ]},
+            { "tipo": "parrafo", "texto": "Con agentes de IA, TDD es especialmente útil: los tests actúan como *backpressure* y como especificación ejecutable. El agente no decide por sí mismo si el resultado es correcto; lo decide la batería de tests." },
+            { "tipo": "nota", "texto": "El error más común en TDD es saltarse la fase de refactorización. Sin ella, el código queda como una acumulación de fragmentos, aunque tenga tests." }
+          ]
+        },
+        {
+          "id": "m4-l2",
+          "titulo": "BDD: especificar con Given-When-Then",
+          "dificultad": "basica",
+          "tiempoLecturaMin": 8,
+          "fuentes": [
+            { "titulo": "Martin Fowler — Given When Then", "url": "https://martinfowler.com/bliki/GivenWhenThen.html", "tipo": "articulo" }
+          ],
+          "bloques": [
+            { "tipo": "parrafo", "texto": "**BDD** (*Behavior-Driven Development*) describe el comportamiento del sistema con ejemplos concretos que todos —negocio, producto y técnicos— pueden leer. Su formato más conocido es **Given-When-Then** (Dado-Cuando-Entonces), popularizado por Cucumber con el lenguaje Gherkin." },
+            { "tipo": "lista", "items": [
+              "**Given / Dado:** el estado del mundo antes de la acción (precondiciones).",
+              "**When / Cuando:** la acción que se especifica.",
+              "**Then / Entonces:** el cambio esperado; las comprobaciones deben ser sin efectos secundarios."
+            ]},
+            { "tipo": "codigo", "lenguaje": "text", "comentario": "Escenario en Gherkin para un sistema de compras.", "codigo": "Característica: Venta de acciones\n  Escenario: venta antes del cierre de mercado\n    Dado que tengo 100 acciones de MSFT\n    Y que la hora es anterior al cierre\n    Cuando pido vender 20 acciones de MSFT\n    Entonces debo tener 80 acciones de MSFT\n    Y debe registrarse una orden de venta de 20 acciones" },
+            { "tipo": "nota", "texto": "Given-When-Then es también la estructura Arrange-Act-Assert de los tests unitarios. Los agentes responden muy bien a escenarios así porque cada escenario es una especificación verificable." }
+          ]
+        },
+        {
+          "id": "m4-l3",
+          "titulo": "SDD, API-First, ODD, ASDD y FTD",
+          "dificultad": "intermedia",
+          "tiempoLecturaMin": 14,
+          "fuentes": [
+            { "titulo": "GitHub — Spec Kit (desarrollo guiado por especificaciones)", "url": "https://github.com/github/spec-kit", "tipo": "docs" },
+            { "titulo": "Swagger — Adopting an API-First Approach", "url": "https://swagger.io/resources/articles/adopting-an-api-first-approach/", "tipo": "articulo" }
+          ],
+          "bloques": [
+            { "tipo": "parrafo", "texto": "**SDD** (*Spec-Driven Development*) pone la especificación en el centro: primero se describe qué se quiere construir y por qué, luego el plan técnico, después las tareas, y solo entonces se genera código. GitHub Spec Kit propone exactamente ese flujo para trabajar con agentes." },
+            { "tipo": "lista", "items": [
+              "**Especificar:** qué problema se resuelve y qué criterios de aceptación se cumplen.",
+              "**Planificar:** decisiones técnicas, arquitectura y restricciones.",
+              "**Desglosar en tareas:** unidades pequeñas y verificables.",
+              "**Implementar:** el agente trabaja tarea a tarea contra la especificación."
+            ]},
+            { "tipo": "parrafo", "texto": "**API-First** (diseño contrato-primero) define primero el contrato de la API, normalmente en OpenAPI/Swagger, y después implementa cliente y servidor. Permite que equipos trabajen en paralelo, reduce el coste de integración y mejora la experiencia de desarrollo." },
+            { "tipo": "tabla", "cabeceras": ["Metodología", "Idea central", "Cuándo encaja"], "filas": [
+              ["ODD (*Option-Driven Development*)", "Explorar varias alternativas técnicas con pros y contras antes de decidir", "Decisiones de arquitectura con incertidumbre"],
+              ["ASDD (*Agent Spec-Driven Development*)", "Especificación ejecutable pensada para que un agente implemente y verifique", "Delegar tareas completas a agentes con criterios claros"],
+              ["FTD (*Feature-Test-Driven Development*)", "Cada funcionalidad se define y se prueba como unidad antes de integrarla", "Entregas incrementales con alta cobertura de pruebas"]
+            ]},
+            { "tipo": "nota", "texto": "**Aviso:** ODD, ASDD y FTD no tienen una definición única de referencia; las expansiones de esta tabla son las usadas en este temario. Contrasta la terminología con tu material de curso." }
+          ]
+        }
+      ],
+      "quiz": [
+        { "id": "m4-q1", "pregunta": "¿Cuáles son los tres pasos repetidos del TDD?", "opciones": ["Diseñar, programar, desplegar", "Red, Green, Refactor", "Plan, Build, Test", "Escribir, revisar, publicar"], "correcta": 1, "explicacion": "El ciclo TDD es Red (test que falla), Green (código mínimo que lo hace pasar) y Refactor (mejora sin cambiar comportamiento)." },
+        { "id": "m4-q2", "pregunta": "¿Qué significa Given-When-Then en BDD?", "opciones": ["Tres niveles de permisos", "Precondiciones, acción especificada y cambio esperado", "Tres tipos de test de carga", "Fases de un despliegue"], "correcta": 1, "explicacion": "Given describe el estado previo, When la acción y Then el resultado esperado. Es una especificación con ejemplos." },
+        { "id": "m4-q3", "pregunta": "¿Por qué los tests son especialmente útiles con agentes de IA en TDD?", "opciones": ["Porque el agente no necesita especificación", "Porque actúan como backpressure: la batería decide si la salida es correcta", "Porque sustituyen al modelo", "Porque eliminan el código"], "correcta": 1, "explicacion": "Los tests ofrecen una señal objetiva de éxito o fallo que el agente puede usar para corregirse, en lugar de confiar en su propia valoración." },
+        { "id": "m4-q4", "pregunta": "En API-First, ¿qué se define primero?", "opciones": ["La base de datos", "El contrato de la API (por ejemplo, en OpenAPI)", "La interfaz gráfica", "El despliegue en producción"], "correcta": 1, "explicacion": "El contrato-primero permite que frontend, backend y consumidores trabajen en paralelo sobre la misma especificación." },
+        { "id": "m4-q5", "pregunta": "¿Qué caracteriza al flujo SDD de Spec Kit?", "opciones": ["Generar código antes de escribir nada", "Especificar, planificar, desglosar en tareas e implementar en ese orden", "Usar solo tests de integración", "Evitar cualquier documentación"], "correcta": 1, "explicacion": "SDD sitúa la especificación al inicio: el código se genera después, tarea a tarea, a partir de un plan técnico y criterios claros." }
+      ]
+    }
+  ],
+  "glosario": [
+    { "termino": "Token", "acronimo": null, "definicion": "Fragmento de texto (palabra, parte de palabra o signo) al que el modelo asigna un identificador numérico. Es la unidad de procesamiento y de facturación.", "modulo": "m1" },
+    { "termino": "Embedding", "acronimo": null, "definicion": "Vector numérico denso que representa el significado de un token en un espacio de muchas dimensiones.", "modulo": "m1" },
+    { "termino": "Transformer", "acronimo": null, "definicion": "Arquitectura de red neuronal basada en atención, presentada en 2017, que es la base de los LLM actuales.", "modulo": "m1" },
+    { "termino": "Autoatención", "acronimo": null, "definicion": "Mecanismo por el que cada token pondera la relevancia de todos los demás tokens de la secuencia para construir su representación.", "modulo": "m1" },
+    { "termino": "Ventana de contexto", "acronimo": null, "definicion": "Número máximo de tokens que el modelo puede procesar a la vez, incluyendo instrucciones, historial y resultados de herramientas.", "modulo": "m1" },
+    { "termino": "Aprendizaje por refuerzo", "acronimo": "RL", "definicion": "Entrenamiento en el que el modelo mejora al maximizar una recompensa por sus acciones o respuestas.", "modulo": "m1" },
+    { "termino": "Reasoning effort", "acronimo": null, "definicion": "Parámetro que controla cuántos tokens de razonamiento interno invierte el modelo antes de responder.", "modulo": "m1" },
+    { "termino": "Function calling", "acronimo": null, "definicion": "Capacidad del modelo para solicitar la ejecución de una función definida por la aplicación, con argumentos estructurados.", "modulo": "m2" },
+    { "termino": "MCP", "acronimo": "Model Context Protocol", "definicion": "Protocolo abierto que estandariza la conexión entre aplicaciones de IA y fuentes de datos o herramientas externas.", "modulo": "m2" },
+    { "termino": "Skill", "acronimo": null, "definicion": "Paquete de instrucciones, plantillas y scripts que un agente carga bajo demanda para ejecutar un procedimiento concreto.", "modulo": "m2" },
+    { "termino": "Workflow", "acronimo": null, "definicion": "Sistema en el que LLM y herramientas se orquestan mediante rutas de código predefinidas.", "modulo": "m2" },
+    { "termino": "Handoff", "acronimo": null, "definicion": "Delegación de una conversación o tarea de un agente a otro agente especializado.", "modulo": "m2" },
+    { "termino": "Guardrail", "acronimo": null, "definicion": "Validación de entradas o salidas de un agente que puede detener la ejecución si no cumple una regla.", "modulo": "m2" },
+    { "termino": "Harness", "acronimo": null, "definicion": "Conjunto de software que rodea al modelo: bucle del agente, herramientas, permisos, contexto, memoria y verificación.", "modulo": "m3" },
+    { "termino": "Backpressure", "acronimo": null, "definicion": "Señal de rechazo (test, linter, compilador) que obliga a un agente a corregir su salida antes de darla por buena.", "modulo": "m3" },
+    { "termino": "ACI", "acronimo": "Agent-Computer Interface", "definicion": "Diseño de las herramientas y del entorno con el que interactúa un agente, pensado para sus propias capacidades y límites.", "modulo": "m3" },
+    { "termino": "Repo map", "acronimo": null, "definicion": "Mapa conciso del repositorio con símbolos y firmas clave, priorizado y ajustado a un presupuesto de tokens.", "modulo": "m3" },
+    { "termino": "Contexto", "acronimo": null, "definicion": "Conjunto de información que el modelo recibe en una llamada. Gestionarlo bien es central en el diseño de agentes.", "modulo": "m3" },
+    { "termino": "TDD", "acronimo": "Test-Driven Development", "definicion": "Técnica que escribe el test antes que el código, en ciclos Red-Green-Refactor.", "modulo": "m4" },
+    { "termino": "BDD", "acronimo": "Behavior-Driven Development", "definicion": "Enfoque que describe el comportamiento con ejemplos legibles, habitualmente en formato Given-When-Then.", "modulo": "m4" },
+    { "termino": "SDD", "acronimo": "Spec-Driven Development", "definicion": "Desarrollo que parte de una especificación y un plan antes de generar código, dividido en tareas verificables.", "modulo": "m4" },
+    { "termino": "API-First", "acronimo": null, "definicion": "Enfoque que define primero el contrato de la API (por ejemplo, OpenAPI) y luego implementa cliente y servidor.", "modulo": "m4" },
+    { "termino": "ODD", "acronimo": "Option-Driven Development", "definicion": "Exploración de varias alternativas con sus pros y contras antes de tomar una decisión técnica.", "modulo": "m4" },
+    { "termino": "ASDD", "acronimo": "Agent Spec-Driven Development", "definicion": "Especificación pensada para que un agente implemente y verifique una tarea con criterios explícitos.", "modulo": "m4" },
+    { "termino": "FTD", "acronimo": "Feature-Test-Driven Development", "definicion": "Enfoque que define y prueba cada funcionalidad como unidad antes de integrarla.", "modulo": "m4" }
+  ]
+}

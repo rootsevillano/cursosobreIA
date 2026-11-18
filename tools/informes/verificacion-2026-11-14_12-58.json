@@ -1,0 +1,103 @@
+{
+  "fecha": "2026-11-14",
+  "fuentes": {
+    "https://huggingface.co/learn/llm-course/chapter1/1": {
+      "estado": "sin_cambios",
+      "http": 200,
+      "caracteres": 12070
+    },
+    "https://github.com/karpathy/ng-video-lecture": {
+      "estado": "sin_cambios",
+      "http": 200,
+      "caracteres": 4016
+    },
+    "https://arxiv.org/abs/1706.03762": {
+      "estado": "sin_cambios",
+      "http": 200,
+      "caracteres": 4977
+    },
+    "https://jalammar.github.io/illustrated-transformer/": {
+      "estado": "sin_cambios",
+      "http": 200,
+      "caracteres": 25363
+    },
+    "https://arxiv.org/abs/2501.12948": {
+      "estado": "sin_cambios",
+      "http": 200,
+      "caracteres": 7615
+    },
+    "https://www.anthropic.com/engineering/building-effective-agents": {
+      "estado": "sin_cambios",
+      "http": 200,
+      "urlFinal": "https://www.anthropic.com/research/building-effective-agents",
+      "caracteres": 19115
+    },
+    "https://ai.google.dev/gemini-api/docs/function-calling": {
+      "estado": "sin_cambios",
+      "http": 200,
+      "urlFinal": "https://aistudio.google.com/docs/function-calling",
+      "caracteres": 104025
+    },
+    "https://github.com/NousResearch/Hermes-Function-Calling": {
+      "estado": "sin_cambios",
+      "http": 200,
+      "caracteres": 18034
+    },
+    "https://modelcontextprotocol.io/introduction": {
+      "estado": "sin_cambios",
+      "http": 200,
+      "urlFinal": "https://modelcontextprotocol.io/docs/2026-07-28/getting-started/intro",
+      "caracteres": 43410
+    },
+    "https://docs.anthropic.com/en/docs/agents-and-tools/claude-code/overview": {
+      "estado": "sin_cambios",
+      "http": 200,
+      "urlFinal": "https://code.claude.com/docs/en/overview",
+      "caracteres": 116955
+    },
+    "https://openai.github.io/openai-agents-python/": {
+      "estado": "sin_cambios",
+      "http": 200,
+      "caracteres": 7487
+    },
+    "https://docs.all-hands.dev/": {
+      "estado": "sin_cambios",
+      "http": 200,
+      "urlFinal": "https://docs.openhands.dev/overview/introduction",
+      "caracteres": 38526
+    },
+    "https://aider.chat/docs/repomap.html": {
+      "estado": "sin_cambios",
+      "http": 200,
+      "caracteres": 5390
+    },
+    "https://arxiv.org/abs/2405.15793": {
+      "estado": "sin_cambios",
+      "http": 200,
+      "caracteres": 5021
+    },
+    "https://martinfowler.com/bliki/TestDrivenDevelopment.html": {
+      "estado": "sin_cambios",
+      "http": 200,
+      "caracteres": 2927
+    },
+    "https://martinfowler.com/bliki/GivenWhenThen.html": {
+      "estado": "sin_cambios",
+      "http": 200,
+      "caracteres": 4408
+    },
+    "https://github.com/github/spec-kit": {
+      "estado": "sin_cambios",
+      "http": 200,
+      "caracteres": 12860
+    },
+    "https://swagger.io/resources/articles/adopting-an-api-first-approach/": {
+      "estado": "sin_cambios",
+      "http": 200,
+      "urlFinal": "https://swagger.io/blog/understanding-the-api-first-approach-to-building-products/",
+      "caracteres": 9457
+    }
+  },
+  "lecciones": [],
+  "modulos": []
+}

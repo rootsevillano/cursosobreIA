@@ -1,0 +1,74 @@
+{
+  "https://huggingface.co/learn/llm-course/chapter1/1": {
+    "huella": "53643dfe14500daf",
+    "comprobada": "2026-11-14"
+  },
+  "https://github.com/karpathy/ng-video-lecture": {
+    "huella": "9767af1296de5bf3",
+    "comprobada": "2026-11-14"
+  },
+  "https://arxiv.org/abs/1706.03762": {
+    "huella": "cdc190b1dc2ecf6f",
+    "comprobada": "2026-11-14"
+  },
+  "https://jalammar.github.io/illustrated-transformer/": {
+    "huella": "992dcd2d8e8993d7",
+    "comprobada": "2026-11-14"
+  },
+  "https://arxiv.org/abs/2501.12948": {
+    "huella": "a05b4f50c9bb245d",
+    "comprobada": "2026-11-14"
+  },
+  "https://www.anthropic.com/engineering/building-effective-agents": {
+    "huella": "cc97d5fc40abf963",
+    "comprobada": "2026-11-14"
+  },
+  "https://ai.google.dev/gemini-api/docs/function-calling": {
+    "huella": "f0c0aeaf1b37cce7",
+    "comprobada": "2026-11-14"
+  },
+  "https://github.com/NousResearch/Hermes-Function-Calling": {
+    "huella": "6b4cbda5f8259e1a",
+    "comprobada": "2026-11-14"
+  },
+  "https://modelcontextprotocol.io/introduction": {
+    "huella": "c067f6f06e94b7e4",
+    "comprobada": "2026-11-14"
+  },
+  "https://docs.anthropic.com/en/docs/agents-and-tools/claude-code/overview": {
+    "huella": "60255b16b51b9177",
+    "comprobada": "2026-11-14"
+  },
+  "https://openai.github.io/openai-agents-python/": {
+    "huella": "9f9c229ac97f028c",
+    "comprobada": "2026-11-14"
+  },
+  "https://docs.all-hands.dev/": {
+    "huella": "9e0ea01bae50b0d7",
+    "comprobada": "2026-11-14"
+  },
+  "https://aider.chat/docs/repomap.html": {
+    "huella": "8625edec134febfc",
+    "comprobada": "2026-11-14"
+  },
+  "https://arxiv.org/abs/2405.15793": {
+    "huella": "b10dffcc55e01c82",
+    "comprobada": "2026-11-14"
+  },
+  "https://martinfowler.com/bliki/TestDrivenDevelopment.html": {
+    "huella": "89d37bc994b656ae",
+    "comprobada": "2026-11-14"
+  },
+  "https://martinfowler.com/bliki/GivenWhenThen.html": {
+    "huella": "40fc8a9a3d0d6089",
+    "comprobada": "2026-11-14"
+  },
+  "https://github.com/github/spec-kit": {
+    "huella": "0df6d559710669f1",
+    "comprobada": "2026-11-14"
+  },
+  "https://swagger.io/resources/articles/adopting-an-api-first-approach/": {
+    "huella": "7cedab06efa961bd",
+    "comprobada": "2026-11-14"
+  }
+}
