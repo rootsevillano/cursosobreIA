@@ -1,0 +1,55 @@
+{
+  "version": 1,
+  "temas": [
+    "Harness Engineering",
+    "MCP",
+    "Nuevo Modelo"
+  ],
+  "videos": [
+    {
+      "id": "X2C0JTpQaQU",
+      "url": "https://www.youtube.com/watch?v=X2C0JTpQaQU",
+      "titulo": "Gemini 4 Neon ya está aquí… y es MUY BESTIA",
+      "canal": "Migue Baena IA",
+      "canalUrl": "https://www.youtube.com/@MigueBaenaIA",
+      "tema": "Nuevo Modelo",
+      "anadido": "2026-11-19"
+    },
+    {
+      "id": "nqzVrkhmNTg",
+      "url": "https://www.youtube.com/watch?v=nqzVrkhmNTg",
+      "titulo": "MCP desde cero: Conecta tu IA a cualquier dato",
+      "canal": "MoureDev by Brais Moure",
+      "canalUrl": "https://www.youtube.com/@mouredev",
+      "tema": "MCP",
+      "anadido": "2026-11-19"
+    },
+    {
+      "id": "q9Vaoz0hd0U",
+      "url": "https://www.youtube.com/watch?v=q9Vaoz0hd0U",
+      "titulo": "¿Qué es esto del Harness Engineering?",
+      "canal": "BettaTech",
+      "canalUrl": "https://www.youtube.com/@BettaTech",
+      "tema": "Harness Engineering",
+      "anadido": "2026-11-19"
+    },
+    {
+      "id": "2B9QTg_-nyc",
+      "url": "https://www.youtube.com/watch?v=2B9QTg_-nyc",
+      "titulo": "Construyo mi propio arnés de IA… y te enseño como hacer el tuyo",
+      "canal": "BettaTech",
+      "canalUrl": "https://www.youtube.com/@BettaTech",
+      "tema": "Harness Engineering",
+      "anadido": "2026-11-19"
+    },
+    {
+      "id": "OA3s1OSXFBc",
+      "url": "https://www.youtube.com/watch?v=OA3s1OSXFBc",
+      "titulo": "No necesitas un modelo de IA más potente, necesitas un harness",
+      "canal": "Marta Arroyo 🥷",
+      "canalUrl": "https://www.youtube.com/@martarroyo",
+      "tema": "Harness Engineering",
+      "anadido": "2026-11-19"
+    }
+  ]
+}

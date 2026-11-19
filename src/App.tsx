@@ -9,6 +9,7 @@ import SelectorModelos from './components/SelectorModelos'
 import MatrizMetodologias from './components/MatrizMetodologias'
 import Glosario from './components/Glosario'
 import Progreso from './components/Progreso'
+import Videos from './components/Videos'
 import { useRuta } from './lib/router'
 import { useProgreso } from './lib/progress'
 import { CURSO } from './lib/search'
@@ -51,6 +52,9 @@ export default function App() {
       break
     case 'progreso':
       contenido = <Progreso progreso={progreso} onImportar={importar} onReiniciar={reiniciar} />
+      break
+    case 'videos':
+      contenido = <Videos />
       break
     default:
       contenido = <Home progreso={progreso} />

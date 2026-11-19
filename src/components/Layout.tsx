@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react'
-import { BookOpen, ClipboardCheck, FlaskConical, Gauge, GraduationCap, Library, Map, Menu, Moon, Search, Sun, X } from 'lucide-react'
+import { BookOpen, Clapperboard, ClipboardCheck, FlaskConical, Gauge, GraduationCap, Library, Map, Menu, Moon, Search, Sun, X } from 'lucide-react'
 import { irA, useRuta } from '../lib/router'
 import { buscar, CURSO } from '../lib/search'
 import type { Progreso } from '../lib/progress'
@@ -95,6 +95,9 @@ export default function Layout({ ruta, progreso, tema, onAlternarTema, menuAbier
       <p className="px-3 pb-1 pt-4 text-xs font-semibold uppercase tracking-wide text-slate-500">Herramientas</p>
       <a href="#/glosario" className={enlace(esActiva('glosario'))}>
         <Library size={18} /> Glosario
+      </a>
+      <a href="#/videos" className={enlace(esActiva('videos'))}>
+        <Clapperboard size={18} /> Vídeos
       </a>
       <a href="#/progreso" className={enlace(esActiva('progreso'))}>
         <GraduationCap size={18} /> Mi progreso
